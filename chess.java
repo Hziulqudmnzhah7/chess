@@ -37,15 +37,15 @@ public class chess extends JPanel{
       {7,7,7,7,7,7,7,7},//7
       {8,9,10,12,11,10,9,8}//8
    };
-   private char turn='b';//w=whites turn; b=blacks turn
-   private void changeTurn(){
+   private char turn='b';//w=whites turn; b=blacks turn //not implemented yet
+   private void changeTurn(){//not implemented yet
       if (turn=='w')
          turn='b';
       else
          turn='w';
       for (int i=0;i<8;i++){
          for (int j=0;j<8;j++){
-            //if (board[i][j]!=0)
+            //if (board[i][j]!=0) 
          }
       }
    }
@@ -105,7 +105,7 @@ public class chess extends JPanel{
          array[i+p][j+l].setBackground(MOVEABLECOLOR);
       return false;
    }
-   private void Move(int i, int j){//move<-all lowercase method is in Component
+   private void Move(int i, int j){//void move(int, int)<---already taken in Component
       if (array[i][j].getBackground()==MOVEABLECOLOR||array[i][j].getBackground()==TAKEABLECOLOR||array[i][j].getBackground()==PASSABLECOLOR||array[i][j].getBackground()==CASTLINGCOLOR){//actually moves and takes pieces
          Point x=new Point();
          for (int	a=0;a<8;a++)
@@ -145,13 +145,21 @@ public class chess extends JPanel{
                board[x.x][x.y]=0;
             }
          }//end castling
-         if (array[i][j].getBackground()==TAKEABLECOLOR)// takeable
+         if (array[i][j].getBackground()==TAKEABLECOLOR)//add removed peice to the takable array
             taken[board[i][j]-1][1]++;
-         if (board[x.x][x.y]==5){
+         if (board[x.x][x.y]==5){//when king moves prevent castling
             wKingSide=false;
             wQueenSide=false;   
          }
-         if (board[x.x][x.y]==11){
+         if (board[x.x][x.y]==2&&i==0&&j==0)//when rook moves prevent castling on that side
+            wKingSide=false;
+         if (board[x.x][x.y]==2&&i==0&&j==7)//when rook moves prevent castling on that side
+            wQueenSide=false;
+         if (board[x.x][x.y]==8&&i==7&&j==0)//when rook moves prevent castling on that side
+            bQueenSide=false;
+         if (board[x.x][x.y]==8&&i==7&&j==7)//when rook moves prevent castling on that side
+            bKingSide=false;
+         if (board[x.x][x.y]==11){//when king moves prevent castling
             bKingSide=false;
             bQueenSide=false;   
          }
