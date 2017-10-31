@@ -1,7 +1,8 @@
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-public class chess extends JPanel{
+public class chess extends JFrame implements ActionListener{
    JButton[][]	array=new JButton[8][8];
    private static final Color STARTCOLOR=Color.YELLOW;
    private static final Color MOVEABLECOLOR=Color.ORANGE;
@@ -223,7 +224,8 @@ public class chess extends JPanel{
          //
       }//end king
    }//end move
-   public chess(){ //panel contructor
+   public chess(String title){ //panel contructor
+      super(title);
       setLayout(new GridLayout(8,8));
       for (int	i=0;i<8;i++){
          for (int	j=0;j<8;j++){
@@ -231,22 +233,34 @@ public class chess extends JPanel{
             array[i][j].setOpaque(true); // make board nicer to look at
             array[i][j].setBorderPainted(false); // ^
             final	int iIndex=i,jIndex=j;
-            array[i][j].addActionListener(
-               e -> {// on click button actions go here
+            array[i][j].addActionListener(e -> {// on click button actions go here
                   Move(iIndex,jIndex);
                });//end of lambda button action
             add(array[i][j]);
          }//j
       }//i
       refresh();
+      //frame and menu below
+      JMenuBar bar = new JMenuBar();
+      JMenu menu = new JMenu("Menu");
+      JMenuItem menuItem = new JMenuItem("save board state", KeyEvent.VK_T); 
+      menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+      //menuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
+      menuItem.addActionListener(this);
+      menu.add(menuItem);
+      bar.add(menu);
+      setJMenuBar(bar);
+
    }
-   public static void main(String args[]){ //main method
-      JFrame frame=new JFrame("chess");
-      frame.setSize(800,800);
+   public void actionPerformed(ActionEvent e) {
+      System.out.println("test");
+   }
+   public static void main(String args[]){
+      chess c = new chess("chess");
+      c.setVisible(true);
+      c.setSize(800,800);
    	//frame.setLocation(200,200); //no no at home
-      frame.setResizable(false);
-      frame.setContentPane(new chess());
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      frame.setVisible(true);
-   }//main
+      c.setResizable(false);
+      c.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+   }
 }//class
