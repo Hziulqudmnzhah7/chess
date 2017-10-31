@@ -253,7 +253,7 @@ public class chess extends JFrame implements ActionListener{
 
    }
    public void actionPerformed(ActionEvent e) {
-      System.out.println("test");
+      System.out.println("test");// placeholder
    }
    public static void main(String args[]){
       chess c = new chess("chess");
