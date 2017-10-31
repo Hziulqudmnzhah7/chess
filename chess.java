@@ -232,7 +232,7 @@ public class chess extends JFrame implements ActionListener{
             array[i][j]=new JButton();
             array[i][j].setOpaque(true); // make board nicer to look at
             array[i][j].setBorderPainted(false); // ^
-            final	int iIndex=i,jIndex=j;
+            final int iIndex=i,jIndex=j;
             array[i][j].addActionListener(e -> {// on click button actions go here
                   Move(iIndex,jIndex);
                });//end of lambda button action
