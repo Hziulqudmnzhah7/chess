@@ -2,13 +2,15 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-public class chess extends JFrame implements ActionListener{
+import java.io.*;
+public class chess extends JFrame{// implements ActionListener{
    JButton[][]	array=new JButton[8][8];
    private static final Color STARTCOLOR=Color.YELLOW;
    private static final Color MOVEABLECOLOR=Color.ORANGE;
    private static final Color TAKEABLECOLOR=Color.BLUE;
    private static final Color PASSABLECOLOR=Color.GREEN;
    private static final Color CASTLINGCOLOR=Color.magenta;
+   private static final String FILENAME="board.txt";
    private static final Map<Byte,String> map = new HashMap<Byte, String>();
    static {
       map.put((byte)1,"white Pawn");
@@ -121,7 +123,7 @@ public class chess extends JFrame implements ActionListener{
             else if (map.get(board[x.x][x.y]).split(" ")[0].equals("black")){
                taken[board[i+1][j]-1][1]++;
                board[i+1][j]=0;
-               }
+            }
          }
          if (array[i][j].getBackground()==CASTLINGCOLOR){
             byte h=0;
@@ -234,8 +236,8 @@ public class chess extends JFrame implements ActionListener{
             array[i][j].setBorderPainted(false); // ^
             final int iIndex=i,jIndex=j;
             array[i][j].addActionListener(e -> {// on click button actions go here
-                  Move(iIndex,jIndex);
-               });//end of lambda button action
+               Move(iIndex,jIndex);
+            });//end lambda
             add(array[i][j]);
          }//j
       }//i
@@ -243,19 +245,60 @@ public class chess extends JFrame implements ActionListener{
       //frame and menu below
       JMenuBar bar = new JMenuBar();
       JMenu menu = new JMenu("Menu");
-      JMenuItem menuItem = new JMenuItem("save board state", KeyEvent.VK_T); 
-      menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-      //menuItem.getAccessibleContext().setAccessibleDescription("This doesn't really do anything");
-      menuItem.addActionListener(this);
-      menu.add(menuItem);
+      JMenuItem save = new JMenuItem("save game"); 
+      JMenuItem open = new JMenuItem("open game");
+      save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK)); 
+      open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+      save.addActionListener(e -> {
+         try {
+            write(board,FILENAME);
+         } catch (IOException ex){
+            System.out.println("something happen"); //<--windows 10 throwback
+         }
+      });//end lambda
+      open.addActionListener(e -> {
+         try {
+            read(FILENAME);
+         } catch (IOException ex){
+            System.out.println("something happen"); //<--windows 10 throwback
+         }
+      });//end lambda
+      menu.add(save);
+      menu.add(open);
       bar.add(menu);
       setJMenuBar(bar);
-
    }
-   public void actionPerformed(ActionEvent e) {
-      System.out.println("test");// placeholder
+   public void write(byte[][] array, String filename) throws IOException{//writes to file
+      System.setOut(new PrintStream(new FileOutputStream(filename)));
+      for(byte[] x : array){
+         for(byte y: x)
+            System.out.print(y+" ");
+        System.out.println("");    
+      }
+      System.out.println(wKingSide+" "+wQueenSide+" "+bKingSide+" "+bQueenSide);
+      for(byte[] x: taken)
+         System.out.print(x[1]+" ");
    }
-   public static void main(String args[]){
+   public void read(String fileName)throws IOException{//reads from file
+      Scanner input = new Scanner(new FileReader(fileName));	
+      for (byte i=0;i<board.length&&input.hasNextLine();i++){
+         String[] temp=input.nextLine().split(" ");
+         for (byte j=0;j<board[i].length;j++){
+            board[i][j]=Byte.parseByte(temp[j]);
+         }
+      }
+      String[] temp = input.nextLine().split(" ");
+      wKingSide=Boolean.parseBoolean(temp[0]);
+      wQueenSide=Boolean.parseBoolean(temp[1]);
+      bKingSide=Boolean.parseBoolean(temp[2]);
+      bQueenSide=Boolean.parseBoolean(temp[3]);
+      temp = input.nextLine().split(" ");
+      for(int i=0;i<taken.length;i++)
+         taken[i][1]=Byte.parseByte(temp[i]);
+      input.close();
+      refresh();//refreshs pieces
+   }
+   public static void main(String args[]) throws IOException{
       chess c = new chess("chess");
       c.setVisible(true);
       c.setSize(800,800);
