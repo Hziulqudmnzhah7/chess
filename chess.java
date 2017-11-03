@@ -3,7 +3,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
-public class chess extends JFrame{// implements ActionListener{
+public class chess extends JFrame{
    JButton[][]	array=new JButton[8][8];
    private static final Color STARTCOLOR=Color.YELLOW;
    private static final Color MOVEABLECOLOR=Color.ORANGE;
@@ -31,14 +31,14 @@ public class chess extends JFrame{// implements ActionListener{
       {1,0}, {2,0}, {3,0}, {4,0}, {5,0}, {6,0}, {7,0}, {8,0}, {9,0}, {10,0}, {11,0}, {12,0},
    };
    private byte[][] board = {//starting board
-      {2,3,4,5,6,4,3,2}, //1
-      {1,1,1,1,1,1,1,1},//2
-      {0,0,0,0,0,0,0,0,},//3
-      {0,0,0,0,0,0,0,0,},//4
-      {0,0,0,0,0,0,0,0,},//5
-      {0,0,0,0,0,0,0,0,},//6
-      {7,7,7,7,7,7,7,7},//7
-      {8,9,10,12,11,10,9,8}//8
+      {2,3,4,5,6,4,3,2},
+      {1,1,1,1,1,1,1,1},
+      {0,0,0,0,0,0,0,0,},
+      {0,0,0,0,0,0,0,0,},
+      {0,0,0,0,0,0,0,0,},
+      {0,0,0,0,0,0,0,0,},
+      {7,7,7,7,7,7,7,7},
+      {8,9,10,12,11,10,9,8}
    };
    private char turn='b';//w=whites turn; b=blacks turn //not implemented yet
    private void changeTurn(){//not implemented yet
@@ -69,20 +69,6 @@ public class chess extends JFrame{// implements ActionListener{
          colored=1;//white
       else 
          colored=-1; //black
-      if (i==7||i==0){//prompt for upgrade
-         ArrayList<Object> possibilities = new ArrayList();
-         for (int p=0;p<12;p++){
-            if (taken[p][1]!=0&&map.get(board[i][j]).split(" ")[0].equals(map.get(taken[p][0]).split(" ")[0]))
-               possibilities.add(map.get(taken[p][0]));
-         }
-         String s=(String)JOptionPane.showInputDialog(new JFrame(),"choose piece to replace your pawn","upgrade",JOptionPane.PLAIN_MESSAGE, null, possibilities.toArray(),null);
-         for (Map.Entry<Byte, String> entry : map.entrySet()) {
-            if (entry.getValue().equals(s))
-               board[i][j]=(byte)entry.getKey();
-         }
-         refresh();
-         return;
-      }//end upgrade
       if ((i==4&&colored==1)||(i==3&&colored==-1)){//passed pawn
          if (j!=0&&board[i][j-1]!=0&&board[i+colored][j-1]==0)
             array[i+colored][j-1].setBackground(PASSABLECOLOR);
@@ -166,9 +152,22 @@ public class chess extends JFrame{// implements ActionListener{
             bKingSide=false;
             bQueenSide=false;   
          }
-         board[i][j]=board[x.x][x.y];
-         board[x.x][x.y]=0;
+         board[i][j]=board[x.x][x.y]; //add piece to new location
+         board[x.x][x.y]=0; //remove piece from old locataion
          refresh();
+         if (map.get(board[i][j]).split(" ")[1].equals("Pawn")&&(i==7||i==0)){//prompt for upgrade
+            ArrayList<Object> possibilities = new ArrayList();
+            for (int p=0;p<12;p++){
+               if (taken[p][1]!=0&&map.get(board[i][j]).split(" ")[0].equals(map.get(taken[p][0]).split(" ")[0]))
+                  possibilities.add(map.get(taken[p][0]));
+            }
+            String s=(String)JOptionPane.showInputDialog(new JFrame(),"choose piece to replace your pawn","upgrade",JOptionPane.PLAIN_MESSAGE, null, possibilities.toArray(),null);
+            for (Map.Entry<Byte, String> entry : map.entrySet()) {
+               if (entry.getValue().equals(s))
+               board[i][j]=(byte)entry.getKey();
+            }
+            refresh();
+         }//end upgrade
          return;
       }//end actually move
       else if (array[i][j].getClientProperty("selected")==null){
@@ -215,13 +214,13 @@ public class chess extends JFrame{// implements ActionListener{
       else if (board[i][j]!=0&&map.get(board[i][j]).split(" ")[1].equals("King")){
          moveable(i,j,1,0); moveable(i,j,-1,0); moveable(i,j,0,1); moveable(i,j,0,-1); 
          moveable(i,j,1,1); moveable(i,j,-1,1); moveable(i,j,1,-1); moveable(i,j,-1,-1);
-         if (wKingSide&&board[0][0]==2&&board[0][1]==0&&board[0][2]==0&&board[0][3]==5)// white king side
+         if (map.get(board[i][j]).split(" ")[0].equals("white")&&wKingSide&&board[0][0]==2&&board[0][1]==0&&board[0][2]==0&&board[0][3]==5)// white king side
             array[0][0].setBackground(CASTLINGCOLOR);
-         if (wQueenSide&&board[0][7]==2&&board[0][6]==0&&board[0][5]==0&&board[0][4]==0&&board[0][3]==5) //white queen side
+         if (map.get(board[i][j]).split(" ")[0].equals("white")&&wQueenSide&&board[0][7]==2&&board[0][6]==0&&board[0][5]==0&&board[0][4]==0&&board[0][3]==5) //white queen side
             array[0][7].setBackground(CASTLINGCOLOR);
-         if (bKingSide&&board[7][7]==8&&board[7][6]==0&&board[7][5]==0&&board[7][4]==11)// black king side
+         if (map.get(board[i][j]).split(" ")[0].equals("black")&&bKingSide&&board[7][7]==8&&board[7][6]==0&&board[7][5]==0&&board[7][4]==11)// black king side
             array[7][7].setBackground(CASTLINGCOLOR);
-         if (bQueenSide&&board[7][0]==8&&board[7][1]==0&&board[7][2]==0&&board[7][3]==0&&board[7][4]==11)// black queen side
+         if (map.get(board[i][j]).split(" ")[0].equals("black")&&bQueenSide&&board[7][0]==8&&board[7][1]==0&&board[7][2]==0&&board[7][3]==0&&board[7][4]==11)// black queen side
             array[7][0].setBackground(CASTLINGCOLOR);
          //
       }//end king
