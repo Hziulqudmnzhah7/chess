@@ -10,6 +10,7 @@ public class chess extends JFrame{
    private static final Color TAKEABLECOLOR=Color.BLUE;
    private static final Color PASSABLECOLOR=Color.GREEN;
    private static final Color CASTLINGCOLOR=Color.magenta;
+   private static final String VERSION = "ALPHA-0.1";
    private static final String FILENAME="board.txt";
    private static final Map<Byte,String> map = new HashMap<Byte, String>();
    static {
